@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Operations System | Meeting → Knowledge Hub Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a2332;
+            --bg-tertiary: #243044;
+            --accent-gold: #d4a853;
+            --accent-gold-dim: rgba(212, 168, 83, 0.15);
+            --text-primary: #f5f5f5;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --success: #34d399;
+            --success-bg: rgba(52, 211, 153, 0.1);
+            --border: rgba(255, 255, 255, 0.08);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Tutorial Banner */
+        .tutorial-banner {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 32px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .tutorial-content {
+            flex: 1;
+        }
+
+        .tutorial-content h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.25rem;
+            color: var(--accent-gold);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tutorial-steps {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .tutorial-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: var(--accent-gold-dim);
+            border: 1px solid var(--accent-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+        }
+
+        .dismiss-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .dismiss-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* Header */
+        .header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #b8942f 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--bg-primary);
+        }
+
+        .logo-text {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.35rem;
+        }
+
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--success-bg);
+            border-radius: 20px;
+            color: var(--success);
+            font-size: 0.8rem;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Container */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title .icon {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Input Section */
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .transcript-box {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .transcript-box .speaker {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .transcript-box .timestamp {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-left: 8px;
+        }
+
+        /* Process Button */
+        .process-btn {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #b8942f 100%);
+            border: none;
+            border-radius: 10px;
+            color: var(--bg-primary);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .process-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 168, 83, 0.3);
+        }
+
+        .process-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .process-btn .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid transparent;
+            border-top-color: var(--bg-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .process-btn.loading .spinner {
+            display: block;
+        }
+
+        .process-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Output Section */
+        .output-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
+
+        .output-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .output-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .output-item {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.4s ease-out;
+        }
+
+        .output-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .output-item-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .output-item-header .badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .badge-summary { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
+        .badge-task { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
+        .badge-client { background: rgba(167, 139, 250, 0.15); color: #a78bfa; }
+        .badge-topic { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+
+        .output-item-content {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .task-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--accent-gold);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .task-details {
+            flex: 1;
+        }
+
+        .task-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .task-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 12px;
+        }
+
+        .tag-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 6px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Knowledge Hub Panel */
+        .knowledge-hub {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .hub-section {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hub-section:last-child {
+            border-bottom: none;
+        }
+
+        .hub-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hub-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.3s ease-out;
+        }
+
+        .hub-item.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .hub-item:hover {
+            background: rgba(212, 168, 83, 0.1);
+            border-color: var(--accent-gold);
+        }
+
+        .hub-item-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .hub-item-content {
+            flex: 1;
+        }
+
+        .hub-item-title {
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .hub-item-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .hub-item-badge {
+            padding: 4px 8px;
+            background: var(--success-bg);
+            color: var(--success);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 0.9rem;
+        }
+
+        /* Flow Arrow */
+        .flow-indicator {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 0;
+            color: var(--accent-gold);
+        }
+
+        .flow-indicator.visible {
+            display: flex;
+        }
+
+        .flow-arrow {
+            font-size: 1.5rem;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+
+        /* Footer */
+        .footer {
+            padding: 20px 32px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tech-stack {
+            display: flex;
+            gap: 12px;
+        }
+
+        .tech-pill {
+            padding: 4px 10px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        /* Animations for sequential reveal */
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.3s; }
+        .stagger-3 { transition-delay: 0.5s; }
+        .stagger-4 { transition-delay: 0.7s; }
+        .stagger-5 { transition-delay: 0.9s; }
+
+        /* Processing animation overlay */
+        .processing-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 20, 25, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+            border-radius: 16px;
+        }
+
+        .processing-overlay.visible {
+            display: flex;
+        }
+
+        .processing-text {
+            color: var(--accent-gold);
+            font-weight: 500;
+        }
+
+        .processing-step {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            animation: fadeInOut 2s infinite;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Card relative positioning for overlay */
+        .card-body {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <!-- Tutorial Banner -->
+    <div class="tutorial-banner" id="tutorialBanner">
+        <div class="tutorial-content">
+            <h2>
+                <span>✨</span>
+                Quick Start Guide
+            </h2>
+            <div class="tutorial-steps">
+                <div class="tutorial-step">
+                    <span class="step-number">1</span>
+                    <span>Review the sample meeting transcript</span>
+                </div>
+                <div class="tutorial-step">
+                    <span class="step-number">2</span>
+                    <span>Click "Process with AI" to run automation</span>
+                </div>
+                <div class="tutorial-step">
+                    <span class="step-number">3</span>
+                    <span>Watch tasks & tags auto-populate</span>
+                </div>
+                <div class="tutorial-step">
+                    <span class="step-number">4</span>
+                    <span>See items route to Knowledge Hub</span>
+                </div>
+            </div>
+        </div>
+        <button class="dismiss-btn" onclick="dismissTutorial()">Got it, let's explore →</button>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">EO</div>
+            <span class="logo-text">Executive Operations System</span>
+        </div>
+        <div class="header-meta">
+            <span>CPA Firm Demo</span>
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                <span>Live Preview</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Left Column: Input & Processing -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="icon">🎙️</span>
+                    Meeting Transcript Input
+                </div>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Zoom Recording • 14 min</span>
+            </div>
+            <div class="card-body">
+                <div class="input-section">
+                    <div class="input-label">Sample Transcript — Tax Planning Strategy Call</div>
+                    <div class="transcript-box">
+                        <p><span class="speaker">David Chen (Partner):</span><span class="timestamp">[00:01:23]</span> Let's review the quarterly estimates for Anderson Holdings. Their Q3 projections show significant capital gains from the property sale.</p>
+                        <br>
+                        <p><span class="speaker">Sarah Martinez (CFO, Anderson Holdings):</span><span class="timestamp">[00:02:45]</span> Correct. The Riverside property closes in October. We're looking at roughly $2.3 million in gains. What are our options for deferral?</p>
+                        <br>
+                        <p><span class="speaker">David Chen:</span><span class="timestamp">[00:03:58]</span> I'll prepare a 1031 exchange analysis by Friday. We should also revisit the opportunity zone investments we discussed last quarter. Maria, can you pull the depreciation schedules for their existing portfolio?</p>
+                        <br>
+                        <p><span class="speaker">Maria Torres (Senior Associate):</span><span class="timestamp">[00:04:32]</span> On it. I'll have those ready by Wednesday along with the updated basis calculations.</p>
+                        <br>
+                        <p><span class="speaker">Sarah Martinez:</span><span class="timestamp">[00:05:15]</span> One more thing—the board is asking about the new clean energy tax credits. Can we get a briefing on how those apply to our manufacturing facilities?</p>
+                        <br>
+                        <p><span class="speaker">David Chen:</span><span class="timestamp">[00:06:02]</span> Absolutely. I'll schedule a separate session next week to walk through the IRA credits. Let's target Tuesday at 2pm if that works.</p>
+                    </div>
+                </div>
+
+                <button class="process-btn" id="processBtn" onclick="processTranscript()">
+                    <span class="spinner"></span>
+                    <span class="btn-text">⚡ Process with AI</span>
+                </button>
+
+                <div class="flow-indicator" id="flowIndicator">
+                    <span class="flow-arrow">↓</span>
+                </div>
+
+                <!-- Output Section -->
+                <div class="output-section" id="outputSection">
+                    <div class="output-grid">
+                        <!-- Summary -->
+                        <div class="output-item stagger-1" id="output1">
+                            <div class="output-item-header">
+                                <span class="badge badge-summary">AI Summary</span>
+                                Extracted
+                            </div>
+                            <div class="output-item-content">
+                                Tax planning call for Anderson Holdings regarding $2.3M capital gains from Q3 property sale. Discussed 1031 exchange options, opportunity zone investments, and IRA clean energy credits for manufacturing facilities. Follow-up meeting scheduled.
+                            </div>
+                        </div>
+
+                        <!-- Action Items -->
+                        <div class="output-item stagger-2" id="output2">
+                            <div class="output-item-header">
+                                <span class="badge badge-task">Action Items</span>
+                                3 tasks created
+                            </div>
+                            <div class="output-item-content">
+                                <div class="task-item">
+                                    <div class="task-checkbox"></div>
+                                    <div class="task-details">
+                                        <div class="task-name">Prepare 1031 exchange analysis</div>
+                                        <div class="task-meta">
+                                            <span>👤 David Chen</span>
+                                            <span>📅 Due: Friday</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-item">
+                                    <div class="task-checkbox"></div>
+                                    <div class="task-details">
+                                        <div class="task-name">Pull depreciation schedules + basis calculations</div>
+                                        <div class="task-meta">
+                                            <span>👤 Maria Torres</span>
+                                            <span>📅 Due: Wednesday</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-item">
+                                    <div class="task-checkbox"></div>
+                                    <div class="task-details">
+                                        <div class="task-name">Schedule IRA clean energy credits briefing</div>
+                                        <div class="task-meta">
+                                            <span>👤 David Chen</span>
+                                            <span>📅 Tuesday 2pm</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="output-item stagger-3" id="output3">
+                            <div class="output-item-header">
+                                <span class="badge badge-client">Client</span>
+                                <span class="badge badge-topic">Topics</span>
+                                Auto-tagged
+                            </div>
+                            <div class="output-item-content">
+                                <div class="tag-list">
+                                    <span class="tag">🏢 Anderson Holdings</span>
+                                    <span class="tag">📋 Tax Planning</span>
+                                    <span class="tag">🔄 1031 Exchange</span>
+                                    <span class="tag">💰 Capital Gains</span>
+                                    <span class="tag">🌿 IRA Credits</span>
+                                    <span class="tag">📊 Q3 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Knowledge Hub -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="icon">📚</span>
+                    Knowledge Hub (Xtiles)
+                </div>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Auto-organized</span>
+            </div>
+            <div class="card-body knowledge-hub">
+                <!-- Empty State (shown initially) -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-icon">📥</div>
+                    <div class="empty-state-text">
+                        Process a meeting transcript to see<br>automatic routing to your knowledge hub
+                    </div>
+                </div>
+
+                <!-- Populated State (shown after processing) -->
+                <div id="hubContent" style="display: none;">
+                    <!-- Client Portfolio -->
+                    <div class="hub-section">
+                        <div class="hub-section-title">
+                            <span>📁</span> Client Portfolio Updated
+                        </div>
+                        <div class="hub-item stagger-3" id="hub1">
+                            <div class="hub-item-icon">🏢</div>
+                            <div class="hub-item-content">
+                                <div class="hub-item-title">Anderson Holdings</div>
+                                <div class="hub-item-meta">3 new items added • Last updated: Just now</div>
+                            </div>
+                            <span class="hub-item-badge">+3</span>
+                        </div>
+                    </div>
+
+                    <!-- Recent Meetings -->
+                    <div class="hub-section">
+                        <div class="hub-section-title">
+                            <span>🎙️</span> Meeting Archive
+                        </div>
+                        <div class="hub-item stagger-4" id="hub2">
+                            <div class="hub-item-icon">📝</div>
+                            <div class="hub-item-content">
+                                <div class="hub-item-title">Tax Planning Strategy Call</div>
+                                <div class="hub-item-meta">Nov 29, 2025 • 14 min • 3 action items</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Items Dashboard -->
+                    <div class="hub-section">
+                        <div class="hub-section-title">
+                            <span>✅</span> Coda Task Table
+                        </div>
+                        <div class="hub-item stagger-5" id="hub3">
+                            <div class="hub-item-icon">📋</div>
+                            <div class="hub-item-content">
+                                <div class="hub-item-title">3 Tasks Synced</div>
+                                <div class="hub-item-meta">Assigned to David Chen (2), Maria Torres (1)</div>
+                            </div>
+                            <span class="hub-item-badge">Synced</span>
+                        </div>
+                    </div>
+
+                    <!-- Topic Knowledge Base -->
+                    <div class="hub-section">
+                        <div class="hub-section-title">
+                            <span>🏷️</span> Topic Cross-Reference
+                        </div>
+                        <div class="hub-item stagger-5" id="hub4">
+                            <div class="hub-item-icon">🔄</div>
+                            <div class="hub-item-content">
+                                <div class="hub-item-title">1031 Exchange</div>
+                                <div class="hub-item-meta">Linked to 4 other client discussions</div>
+                            </div>
+                        </div>
+                        <div class="hub-item stagger-5" id="hub5">
+                            <div class="hub-item-icon">🌿</div>
+                            <div class="hub-item-content">
+                                <div class="hub-item-title">IRA Clean Energy Credits</div>
+                                <div class="hub-item-meta">New topic created • Research pending</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-brand">
+            <span>Powered by</span>
+            <strong style="color: var(--accent-gold);">ResultantAI</strong>
+        </div>
+        <div class="tech-stack">
+            <span class="tech-pill">Make.com</span>
+            <span class="tech-pill">Claude API</span>
+            <span class="tech-pill">Xtiles</span>
+            <span class="tech-pill">Coda</span>
+        </div>
+    </footer>
+
+    <script>
+        // Dismiss tutorial banner
+        function dismissTutorial() {
+            const banner = document.getElementById('tutorialBanner');
+            banner.style.animation = 'slideUp 0.3s ease-out forwards';
+            setTimeout(() => banner.style.display = 'none', 300);
+        }
+
+        // Add slideUp animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                from { transform: translateY(0); opacity: 1; }
+                to { transform: translateY(-100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Processing states
+        const processingSteps = [
+            "Transcribing audio...",
+            "Extracting key decisions...",
+            "Identifying action items...",
+            "Tagging client & topics...",
+            "Routing to knowledge hub..."
+        ];
+
+        let currentStep = 0;
+
+        // Main processing function
+        function processTranscript() {
+            const btn = document.getElementById('processBtn');
+            const flowIndicator = document.getElementById('flowIndicator');
+            const outputSection = document.getElementById('outputSection');
+            const emptyState = document.getElementById('emptyState');
+            const hubContent = document.getElementById('hubContent');
+            
+            // Disable button and show loading
+            btn.disabled = true;
+            btn.classList.add('loading');
+
+            // Simulate processing steps
+            let stepIndex = 0;
+            const stepInterval = setInterval(() => {
+                if (stepIndex >= processingSteps.length) {
+                    clearInterval(stepInterval);
+                    return;
+                }
+                stepIndex++;
+            }, 400);
+
+            // After "processing", reveal outputs
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+                btn.innerHTML = '<span class="btn-text">✓ Processed</span>';
+                btn.style.background = 'linear-gradient(135deg, #34d399 0%, #059669 100%)';
+                
+                // Show flow indicator
+                flowIndicator.classList.add('visible');
+                
+                // Show output section
+                outputSection.classList.add('visible');
+                
+                // Reveal output items with stagger
+                setTimeout(() => {
+                    document.getElementById('output1').classList.add('visible');
+                }, 200);
+                setTimeout(() => {
+                    document.getElementById('output2').classList.add('visible');
+                }, 600);
+                setTimeout(() => {
+                    document.getElementById('output3').classList.add('visible');
+                }, 1000);
+
+                // Show hub content
+                setTimeout(() => {
+                    emptyState.style.display = 'none';
+                    hubContent.style.display = 'block';
+                    
+                    // Reveal hub items
+                    setTimeout(() => document.getElementById('hub1').classList.add('visible'), 200);
+                    setTimeout(() => document.getElementById('hub2').classList.add('visible'), 400);
+                    setTimeout(() => document.getElementById('hub3').classList.add('visible'), 600);
+                    setTimeout(() => document.getElementById('hub4').classList.add('visible'), 800);
+                    setTimeout(() => document.getElementById('hub5').classList.add('visible'), 1000);
+                }, 1200);
+
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
